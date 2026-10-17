@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: salescloud-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  service-registry:
+    build: ./service-registry
+    ports: ["8761:8761"]
+    depends_on: [postgres]
+
+  auth-service:
+    build: ./auth-service
+    ports: ["8081:8081"]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/db_auth
+      EUREKA_URL: http://service-registry:8761/eureka/
+    depends_on: [postgres, service-registry]
+
+  product-service:
+    build: ./product-service
+    ports: ["8082:8082"]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/db_product
+      EUREKA_URL: http://service-registry:8761/eureka/
+    depends_on: [postgres, service-registry]
+
+  sales-service:
+    build: ./sales-service
+    ports: ["8083:8083"]
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/db_sales
+      EUREKA_URL: http://service-registry:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+    depends_on: [postgres, service-registry, product-service]
+
+  api-gateway:
+    build: ./api-gateway
+    ports: ["8080:8080"]
+    environment:
+      EUREKA_URL: http://service-registry:8761/eureka/
+    depends_on: [service-registry, auth-service, product-service, sales-service]
+
+volumes:
+  postgres-data:
