@@ -1,0 +1,13 @@
+{
+  "info": { "name": "SalesCloud", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:8080" }, { "key": "productId", "value": "1" }, { "key": "saleId", "value": "1" }],
+  "item": [
+    { "name": "Create product", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Notebook\",\n  \"description\": \"Equipo portatil\",\n  \"price\": 799990,\n  \"stock\": 10\n}" }, "url": "{{baseUrl}}/products" } },
+    { "name": "List products", "request": { "method": "GET", "url": "{{baseUrl}}/products" } },
+    { "name": "Update product", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Notebook actualizado\",\n  \"description\": \"Equipo portatil\",\n  \"price\": 749990,\n  \"stock\": 8\n}" }, "url": "{{baseUrl}}/products/{{productId}}" } },
+    { "name": "Create user", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"USER\"\n}" }, "url": "{{baseUrl}}/auth/register" } },
+    { "name": "Create sale", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"customerId\": 1,\n  \"details\": [{\"productId\": {{productId}}, \"quantity\": 2}]\n}" }, "url": "{{baseUrl}}/sales" } },
+    { "name": "List sales", "request": { "method": "GET", "url": "{{baseUrl}}/sales" } },
+    { "name": "Not found error", "request": { "method": "GET", "url": "{{baseUrl}}/products/999999" } }
+  ]
+}
