@@ -9,7 +9,13 @@ import org.springframework.web.client.RestClient;
 @Service
 public class ProductClient {
     private final RestClient client;
-    public ProductClient(RestClient.Builder builder) { this.client = builder.baseUrl("http://product-service").build(); }
+
+    public ProductClient() {
+        String productServiceUrl = System.getProperty(
+                "product.service.url",
+                System.getenv().getOrDefault("PRODUCT_SERVICE_URL", "http://localhost:8082"));
+        this.client = RestClient.builder().baseUrl(productServiceUrl).build();
+    }
     @CircuitBreaker(name = "productService", fallbackMethod = "fallback")
     public BigDecimal priceOf(Long productId) {
         Map<?, ?> product = client.get().uri("/products/{id}", productId).retrieve().body(Map.class);
