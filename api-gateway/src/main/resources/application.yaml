@@ -3,19 +3,21 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: lb://auth-service
-          predicates:
-            - Path=/auth/**
-        - id: product-service
-          uri: lb://product-service
-          predicates:
-            - Path=/products/**
-        - id: sales-service
-          uri: lb://sales-service
-          predicates:
-            - Path=/sales/**
+      server:
+        webmvc:
+          routes:
+            - id: auth-service
+              uri: lb://auth-service
+              predicates:
+                - Path=/auth/**
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/products/**
+            - id: sales-service
+              uri: lb://sales-service
+              predicates:
+                - Path=/sales/**
 
 server:
   port: ${SERVER_PORT:8080}
@@ -26,6 +28,7 @@ eureka:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
+    registry-fetch-interval-seconds: 5
 
 management:
   endpoints:

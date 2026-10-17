@@ -35,6 +35,8 @@ done
 docker compose up --build
 ```
 
+Compose espera a que PostgreSQL, Eureka y los microservicios estén saludables antes de iniciar el gateway. Si se modifica el código, se puede repetir el mismo comando para reconstruir las imágenes.
+
 3. Verificar:
 
 - Eureka: http://localhost:8761

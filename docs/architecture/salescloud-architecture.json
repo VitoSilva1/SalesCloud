@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "SalesCloud Architecture",
+    "subtitle": "Spring Cloud services behind a gateway with Eureka discovery and PostgreSQL persistence",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "viewBox": [1320, 860],
+    "repository": {
+      "url": "https://github.com/VitoSilva1/SalesCloud",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "9ba10eb4be26b75658043750243c8a33a97f91de"
+    }
+  },
+  "components": [
+    {"id":"client","type":"external","label":"Client / Browser","sublabel":"HTTP API consumer","pos":[40,340],"size":[150,70],"sources":[{"path":"README.md","label":"Project overview"}]},
+    {"id":"gateway","type":"backend","label":"API Gateway","sublabel":"Spring Cloud Gateway · :8080","tag":"/auth · /products · /sales","pos":[260,340],"size":[180,80],"sources":[{"path":"api-gateway/src/main/resources/application.yaml","label":"Route configuration"}]},
+    {"id":"registry","type":"cloud","label":"Service Registry","sublabel":"Eureka · :8761","pos":[800,70],"size":[180,80],"sources":[{"path":"service-registry/src/main/resources/application.yaml","label":"Eureka server"}]},
+    {"id":"auth","type":"security","label":"Auth Service","sublabel":"Spring Boot · :8081","tag":"db_auth","pos":[560,300],"size":[180,80],"sources":[{"path":"auth-service/src/main/resources/application.yaml","label":"Service configuration"},{"path":"auth-service/src/main/java/com/example/auth_service/controller/AuthController.java","label":"Auth endpoints"}]},
+    {"id":"product","type":"backend","label":"Product Service","sublabel":"Spring Boot · :8082","tag":"db_product","pos":[800,300],"size":[180,80],"sources":[{"path":"product-service/src/main/resources/application.yaml","label":"Service configuration"}]},
+    {"id":"sales","type":"backend","label":"Sales Service","sublabel":"Spring Boot · :8083","tag":"db_sales","pos":[1040,300],"size":[180,80],"sources":[{"path":"sales-service/src/main/resources/application.yaml","label":"Service configuration"},{"path":"sales-service/src/main/java/com/example/sales_service/client/ProductClient.java","label":"Product client"}]},
+    {"id":"postgres","type":"database","label":"PostgreSQL","sublabel":"Docker · :5434 → :5432","tag":"db_auth · db_product · db_sales","pos":[800,520],"size":[220,90],"sources":[{"path":"docker-compose.yml","label":"Database container"},{"path":"infra/postgres/init.sql","label":"Database initialization"}]}
+  ],
+  "boundaries": [
+    {"kind":"region","label":"SalesCloud Docker Compose environment","wraps":["registry","gateway","auth","product","sales","postgres"],"pad":32}
+  ],
+  "connections": [
+    {"id":"client-gateway","from":"client","to":"gateway","label":"HTTP API requests","variant":"emphasis","labelDy":-30},
+    {"id":"gateway-registry","from":"gateway","to":"registry","label":"service discovery","variant":"dashed"},
+    {"id":"gateway-auth","from":"gateway","to":"auth","label":"/auth/**"},
+    {"id":"sales-product","from":"sales","to":"product","label":"ProductClient · HTTP","variant":"security","fromSide":"left","toSide":"right","labelDy":-36},
+    {"id":"product-db","from":"product","to":"postgres","label":"PostgreSQL persistence","fromSide":"bottom","toSide":"top"}
+  ],
+  "cards": [
+    {"dot":"cyan","title":"Ingress","items":["Clients call the API Gateway on port 8080","Routes map /auth, /products, and /sales to services"]},
+    {"dot":"violet","title":"Discovery","items":["Services register with Eureka on port 8761","Gateway resolves load-balanced service routes"]},
+    {"dot":"emerald","title":"Persistence","items":["PostgreSQL runs in Docker Compose","Auth, product, and sales use separate databases"]}
+  ]
+}

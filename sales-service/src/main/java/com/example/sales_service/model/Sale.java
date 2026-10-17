@@ -14,7 +14,12 @@ public class Sale {
     private Long customerId;
     private LocalDateTime createdAt = LocalDateTime.now();
     private BigDecimal total = BigDecimal.ZERO;
-    @NotEmpty @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true) @Valid
+    @NotEmpty @OneToMany(
+            mappedBy = "sale",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
+    @Valid
     private List<SaleDetail> details = new ArrayList<>();
     public Long getId() { return id; }
     public Long getCustomerId() { return customerId; }
